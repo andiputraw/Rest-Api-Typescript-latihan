@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
-import { init } from "./init";
+import { init } from "./services/init";
+import "./db/conn";
 
 const app: Express = express();
 const port: number = 5000;

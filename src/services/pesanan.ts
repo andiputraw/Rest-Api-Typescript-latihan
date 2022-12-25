@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction, Router } from "express";
+import { insertPesanan, Ipesanan, Status } from "../db/pesanan";
+import { body, validationResult } from "express-validator";
 
 export const pesanan: Router = Router();
 
@@ -14,9 +16,25 @@ pesanan.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.send({ status: 200, data: tumbal });
 });
 
-pesanan.post("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send(req.body);
-});
+pesanan.post(
+  "/",
+  body("nama").exists({ checkFalsy: true }),
+  body("jenisPesanan").exists({ checkFalsy: true }),
+  body("jumlah").exists({ checkFalsy: true }),
+  body("totalHarga").exists({ checkFalsy: true }),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.send({ status: 404, msg: "some error has occured", errors: errors.array() }).status(404);
+    }
+
+    const { nama, jenisPesanan, jumlah, totalHarga }: Ipesanan = req.body;
+    const result: Status = await insertPesanan(nama, jenisPesanan, jumlah, totalHarga);
+
+    res.send(result);
+  }
+);
 
 pesanan.delete("/:id", (req: Request, res: Response, Next: NextFunction) => {
   res.send(req.body);

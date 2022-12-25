@@ -1,6 +1,6 @@
 import { Application, Router } from "express";
-import { pesanan } from "./services/pesanan";
-import { omset } from "./services/omset";
+import { pesanan } from "./pesanan";
+import { omset } from "./omset";
 
 const routes: Array<[string, Router]> = [
   ["/pesanan", pesanan],
