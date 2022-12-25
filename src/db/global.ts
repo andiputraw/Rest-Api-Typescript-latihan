@@ -1,12 +1,20 @@
 import { getDaftarMakanan, IDaftarMakanan } from "./daftarMakanan";
 
-let data: IDaftarMakanan[] | null;
-let msg: String;
+export let data: IDaftarMakanan[] | null;
+export let msg: String;
+export let daftarMakanan: string[] = [];
 
-setInterval(async () => {
+setInterval(isiData, 60000);
+
+async function isiData() {
   const result = await getDaftarMakanan();
   data = result.data;
+
+  data?.forEach((v) => daftarMakanan.push(v.nama));
+  console.log(daftarMakanan);
+
   if (data === null) {
     msg = result.msg;
   }
-}, 60000);
+}
+isiData();

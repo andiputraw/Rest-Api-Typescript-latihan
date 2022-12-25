@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, Router } from "express";
 import { insertPesanan, Ipesanan, Status } from "../db/pesanan";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, oneOf } from "express-validator";
+import { daftarMakanan } from "../db/global";
 
 export const pesanan: Router = Router();
 
@@ -19,7 +20,7 @@ pesanan.get("/", (req: Request, res: Response, next: NextFunction) => {
 pesanan.post(
   "/",
   body("nama").exists({ checkFalsy: true }),
-  body("jenisPesanan").exists({ checkFalsy: true }),
+  body("jenisPesanan").exists({ checkFalsy: true }).isIn(daftarMakanan),
   body("jumlah").exists({ checkFalsy: true }),
   body("totalHarga").exists({ checkFalsy: true }),
   async (req: Request, res: Response, next: NextFunction) => {

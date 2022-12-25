@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IDaftarMakanan {
-  nama: String;
+  nama: string;
   harga: Number;
 }
 
