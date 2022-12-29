@@ -1,17 +1,11 @@
 import mongoose, { Schema } from "mongoose";
-getData();
 
 export interface IDaftarMakanan {
   nama: string;
   harga: Number;
 }
 
-interface Result {
-  status: number;
-  data: IDaftarMakanan[] | [];
-  msg: string;
-}
-
+//* Buat Schema daftar Makanan
 const DaftarMakanan = mongoose.model(
   "DaftarMakanan",
   new Schema<IDaftarMakanan>({
@@ -20,27 +14,25 @@ const DaftarMakanan = mongoose.model(
   })
 );
 
-export let globalData: IDaftarMakanan[] = [{ nama: "", harga: 0 }];
-export let globalDaftarMakanan: string[] = [];
-
-export async function getDaftarMakanan(): Promise<Result> {
+export async function getDaftarMakanan(): Promise<IDaftarMakanan[]> {
   try {
+    //* Ambil Daftar Makanan Lalu kembalikan dalam bentuk array of object
     const result = await DaftarMakanan.find();
-    return { status: 200, data: result, msg: "Data berhasil di ambil" };
+    return result;
   } catch (error) {
-    return { status: 500, data: [], msg: "An error has occured" };
+    //* Jika error, ada masalah di server
+    throw "Internal Error";
   }
 }
 
-setInterval(getData, 60000);
-
-async function getData() {
-  const tmp = (await getDaftarMakanan()).data;
-
-  if (tmp.length > 0) {
-    globalData = tmp;
-    globalData.forEach((val) => globalDaftarMakanan.push(val.nama));
+export async function getHarga(jenisPesanan: string): Promise<number> {
+  try {
+    //* Ambil daftar makanan berdasarkan jenis pesanan. lalu ambil harganya
+    const result = (await DaftarMakanan.findOne({ nama: jenisPesanan }))?.harga;
+    //* Kembalikan hasil lalu paksa dia menjadi type number, karena kita sudah memvalidasi di bagian depan
+    return result as number;
+  } catch (error) {
+    //* Jika error, berarti ada masalah di server
+    throw error;
   }
 }
-
-getData();
