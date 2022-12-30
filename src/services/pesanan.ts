@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, Router } from "express";
-import { insertPesanan, Ipesanan, Status } from "../db/pesanan";
+import { insertPesanan, Ipesanan, Status, getPesanan, getPesananById, deletePesananById } from "../db/pesanan";
 import { body, validationResult, oneOf } from "express-validator";
 import { getDaftarMakanan } from "../db/daftarMakanan";
 
@@ -14,8 +14,29 @@ type dummy = {
 
 const tumbal: Array<dummy> = [{ nama: "andi", pesanan: "Nasi Goreng", hargaBeli: 2000 }];
 
-pesanan.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send({ status: 200, data: tumbal });
+//* Method Get
+pesanan.get("/", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await getPesanan();
+
+    res.status(200).send({ status: 200, msg: "ok", data: result });
+  } catch (error) {
+    res.status(500).send({ status: 500, msg: error, data: null });
+  }
+});
+
+pesanan.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const result = await getPesananById(req.params.id);
+
+    if (result.status === 0) {
+      return res.status(404).send({ status: 404, msg: result.msg, data: null });
+    }
+
+    res.status(200).send({ status: 200, msg: "ok", data: result });
+  } catch (error) {
+    res.status(500).send({ status: 500, msg: error, data: null });
+  }
 });
 
 //* Method POST
@@ -52,8 +73,16 @@ pesanan.post(
   }
 );
 
-pesanan.delete("/:id", (req: Request, res: Response, Next: NextFunction) => {
-  res.send(req.body);
+pesanan.delete("/:id", async (req: Request, res: Response, Next: NextFunction) => {
+  try {
+    const result = await deletePesananById(req.params.id);
+    if (result.status === 0) {
+      return res.status(404).send({ status: 404, msg: result.msg });
+    }
+    res.status(200).send({ status: 200, msg: "ok" });
+  } catch (error) {
+    res.status(500).send({ status: 500, msg: error });
+  }
 });
 
 pesanan.put("/:id", (req: Request, res: Response, Next: NextFunction) => {
