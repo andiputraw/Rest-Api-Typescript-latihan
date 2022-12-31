@@ -1,5 +1,6 @@
 import mongoose, { mongo, ObjectId, Schema } from "mongoose";
 import { getHarga } from "./daftarMakanan";
+import { customError, isACustomError, newCustomError } from "../Types";
 
 export interface Ipesanan {
   nama: string;
@@ -34,7 +35,9 @@ export async function insertPesanan(pemesan: string, jenisPesanan: string, jumla
     // TODO buat logging
     console.log(error);
     //* Jika gagal, artinya ada masalah di server
-    throw "Internal Error";
+    const err: customError = { error: "server", msg: "server error", details: {} };
+
+    throw err;
   }
 }
 
@@ -44,42 +47,75 @@ export async function getPesanan(): Promise<Ipesanan[]> {
 
     return result;
   } catch (error) {
-    throw "internal Error";
+    const err: customError = { error: "server", msg: "server error", details: {} };
+
+    throw err;
   }
 }
 
-export async function getPesananById(id: string): Promise<{ status: number; msg: string; data: Ipesanan | null }> {
+export async function getPesananById(id: string): Promise<{ msg: string; data: Ipesanan }> {
   try {
     if (!mongoose.isValidObjectId(id)) {
-      return { status: 0, msg: "Id Tidak Valid", data: null };
+      throw { error: "client", msg: "id tidak valid", details: { field: "_id", error: "invalid id" } };
     }
 
     const result = await pesanan.findById(id);
 
     if (result === null) {
-      return { status: 0, msg: "Id Tidak Ditemukan", data: null };
+      throw { error: "client", msg: "id tidak ditemukan", details: { field: "_id", error: "id not found" } };
     }
 
-    return { status: 1, msg: "ok", data: result };
+    return { msg: "ok", data: result };
   } catch (error) {
-    throw "internal Error";
+    if (isACustomError(error)) {
+      throw error;
+    } else {
+      throw { error: "server", msg: "Server Error", details: {} };
+    }
   }
 }
 
-export async function deletePesananById(id: string): Promise<{ status: number; msg: string }> {
+export async function deletePesananById(id: string): Promise<string> {
   try {
     if (!mongoose.isValidObjectId(id)) {
-      return { status: 0, msg: "Id Tidak Valid" };
+      throw { error: "client", msg: "id tidak valid", details: { field: "_id", error: "invalid id" } };
     }
 
     const result = await pesanan.deleteOne({ _id: id });
 
     if (result.deletedCount < 1) {
-      return { status: 0, msg: "Id Tidak Ditemukan" };
+      throw { error: "client", msg: "id tidak ditemukan", details: { field: "_id", error: "id not found" } };
     }
 
-    return { status: 1, msg: "ok" };
+    return "ok";
   } catch (error) {
-    throw "Internal Error";
+    if (isACustomError(error)) {
+      throw error;
+    } else {
+      throw { error: "server", msg: "server Error", details: {} };
+    }
+  }
+}
+
+export async function updatePesanan(pemesan: string, jenisPesanan: string, jumlah: number, id: string): Promise<Status> {
+  try {
+    if (!mongoose.isValidObjectId(id)) {
+      throw { error: "client", msg: "id tidak valid", details: { field: "_id", error: "invalid id" } };
+    }
+    const harga = await getHarga(jenisPesanan).then((harga) => harga * jumlah);
+
+    const result = await pesanan.updateOne({ _id: id }, { nama: pemesan, jenisPesanan: jenisPesanan, jumlah: jumlah, harga: harga });
+
+    if (result.modifiedCount === 0) {
+      throw newCustomError("client", "id Tidak ditemukan", { field: "id", error: "unknown id" });
+    }
+
+    return "ok";
+  } catch (error) {
+    if (isACustomError(error)) {
+      throw error;
+    } else {
+      throw newCustomError("server", "server Error", {});
+    }
   }
 }
