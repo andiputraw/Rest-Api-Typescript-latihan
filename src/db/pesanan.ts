@@ -1,6 +1,7 @@
 import mongoose, { mongo, ObjectId, Schema } from "mongoose";
 import { getHarga } from "./daftarMakanan";
 import { customError, isACustomError, newCustomError } from "../Types";
+import { createLog } from "../log/logger";
 
 export interface Ipesanan {
   nama: string;
@@ -30,10 +31,10 @@ export async function insertPesanan(pemesan: string, jenisPesanan: string, jumla
     const harga = await getHarga(jenisPesanan).then((result) => result * jumlah);
     //* Masukan ke daftar makanan, kembalikan sukses
     await pesanan.insertMany([{ nama: pemesan, jenisPesanan: jenisPesanan, jumlah: jumlah, totalHarga: harga }]);
+
     return "ok";
   } catch (error) {
-    // TODO buat logging
-    console.log(error);
+    createLog("error", `${error}`);
     //* Jika gagal, artinya ada masalah di server
     const err: customError = { error: "server", msg: "server error", details: {} };
 
@@ -47,6 +48,7 @@ export async function getPesanan(): Promise<Ipesanan[]> {
 
     return result;
   } catch (error) {
+    createLog("error", `${error}`);
     const err: customError = { error: "server", msg: "server error", details: {} };
 
     throw err;
@@ -70,6 +72,7 @@ export async function getPesananById(id: string): Promise<{ msg: string; data: I
     if (isACustomError(error)) {
       throw error;
     } else {
+      createLog("error", `${error}`);
       throw { error: "server", msg: "Server Error", details: {} };
     }
   }
@@ -92,6 +95,7 @@ export async function deletePesananById(id: string): Promise<string> {
     if (isACustomError(error)) {
       throw error;
     } else {
+      createLog("error", `${error}`);
       throw { error: "server", msg: "server Error", details: {} };
     }
   }
@@ -115,6 +119,7 @@ export async function updatePesanan(pemesan: string, jenisPesanan: string, jumla
     if (isACustomError(error)) {
       throw error;
     } else {
+      createLog("error", `${error}`);
       throw newCustomError("server", "server Error", {});
     }
   }
