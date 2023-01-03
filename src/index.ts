@@ -1,9 +1,7 @@
 import express, { Express } from "express";
 import bodyParser from "body-parser";
-import { init } from "./services/init";
-import "./db/conn";
-import * as dotenv from "dotenv";
-dotenv.config();
+import { init } from "./routes/init";
+import "./utils/conn";
 
 const app: Express = express();
 const port: number = 5000;

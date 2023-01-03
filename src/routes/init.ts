@@ -1,5 +1,5 @@
 import { Application, Router } from "express";
-import { pesanan } from "./pesanan";
+import { pesanan } from "./pesanan.route";
 import { omset } from "./omset";
 
 //* Bungkus semua route ke array
