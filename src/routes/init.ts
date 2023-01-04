@@ -1,12 +1,14 @@
 import { Application, Router } from "express";
 import { pesanan } from "./pesanan.route";
 import { omset } from "./omset";
+import { auth } from "./auth";
 
 //* Bungkus semua route ke array
 
 const routes: Array<[string, Router]> = [
   ["/pesanan", pesanan],
   ["/omset", omset],
+  ["/auth", auth],
 ];
 
 //* Loop semua, lalu jalankan semua route nya

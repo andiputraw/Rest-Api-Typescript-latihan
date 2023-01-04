@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { addPesanan, getPesanan, updatePesanan, deletePesanan } from "../controller/pesanan.controller";
+import { addPesanan, getPesanan, updatePesanan, deletePesanan } from "../controllers/pesanan.controller";
 
 export const pesanan: Router = Router();
 
