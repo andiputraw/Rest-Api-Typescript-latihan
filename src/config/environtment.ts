@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 const CONFIG = {
-  secret_key: "tcfdyugvihbkjonlp;kmmuniytafdrtuygiuholj;kmjnyucvgfcdtgyhxcujtfygvftgsyahgj",
+  secret_key: process.env.SECRET_KEY,
 };
 
 export default CONFIG;

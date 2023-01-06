@@ -2,8 +2,11 @@ import { Router } from "express";
 
 import { addPesanan, getPesanan, updatePesanan, deletePesanan } from "../controllers/pesanan.controller";
 
+import { tokenChecker } from "../middleware/tokenChecker";
+
 export const pesanan: Router = Router();
 
+pesanan.use(tokenChecker);
 //* Method Get
 pesanan.get("/", getPesanan);
 

@@ -24,7 +24,7 @@ export async function createLogInfo(level: "info" | "error" | "warn", message: s
     ip: info.ip,
     method: info.method,
     url: info.url,
-    failed: info.failed ? JSON.stringify(info.failed) : info.failed,
+    info: info.failed ? JSON.stringify(info.failed) : info.failed,
   });
 }
 

@@ -3,4 +3,4 @@
 <h2> TO DO </h2>
 <p><s> Membuat basic routing</s> </p>
 <p><s> Database dengan mongodb dan mongoose (setengah jadi) </s></p>
-<p> Implementasi JWT </p>
+<p> Implementasi JWT (60%) </p>
