@@ -4,14 +4,8 @@ import { createLog, createLogInfo, newInfoLog } from "../utils/logger";
 import { pesananSchema, cekPesanan } from "../validation/pesanan.validation";
 
 export const addPesanan = async (req: Request, res: Response) => {
-  const { error, value } = pesananSchema.validate(req.body);
-
-  if (error) {
-    createLog("error", "Error create pesanan : " + error.details[0].message);
-    return res.status(422).send({ status: false, statusCode: 422, message: error.details[0].message });
-  }
-
   try {
+    const value = await pesananSchema.validateAsync(req.body);
     await cekPesanan(value.jenisPesanan);
     await insertPesanan(value.pemesan, value.jenisPesanan, value.jumlah);
     createLog("info", "Success add product");
@@ -48,14 +42,9 @@ export const getPesanan = async (req: Request, res: Response) => {
 
 export const updatePesanan = async (req: Request, res: Response) => {
   const id = req.params.id;
-  const { error, value } = pesananSchema.validate(req.body);
-
-  if (error) {
-    createLogInfo("warn", "Error create pesanan" + error.details[0].message, newInfoLog(req, error.details[0].message));
-    return res.status(422).send({ status: false, statusCode: 422, message: error.details[0].message });
-  }
 
   try {
+    const value = await pesananSchema.validateAsync(req.body);
     await cekPesanan(value.jenisPesanan);
     await updatePesananById(value.pemesan, value.jenisPesanan, value.jumlah, id);
     createLogInfo("info", "success update pesanan", newInfoLog(req));

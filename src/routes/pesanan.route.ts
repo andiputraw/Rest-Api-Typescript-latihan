@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { addPesanan, getPesanan, updatePesanan, deletePesanan } from "../controllers/pesanan.controller";
 
-import { tokenChecker } from "../middleware/tokenChecker";
+import { tokenChecker } from "../middleware/token.middleware";
 
 export const pesanan: Router = Router();
 
